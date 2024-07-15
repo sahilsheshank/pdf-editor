@@ -1,8 +1,14 @@
 'use client';
 import { useState } from 'react';
 import { PDFDocument } from 'pdf-lib';
+import { Document, Page, pdfjs } from 'react-pdf';
+
+
+pdfjs.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.mjs';
 export default function Home() {
+  const [numPages, setNumPages] = useState(null);
   const [fieldNames, setFieldNames] = useState([]);
+  const [error, setError] = useState('');
   const [modifiedPdf, setModifiedPdf] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -154,6 +160,16 @@ export default function Home() {
         }
         </div>
       )}
+       <div className='flex justify-center items-center w-full'>
+        <Document
+          file={modifiedPdf}
+          onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+        >
+          {Array.from(new Array(numPages), (el, index) => (
+            <Page  key={`page_${index + 1}`} pageNumber={index + 1} />
+          ))}
+        </Document>
+      </div>
     </div>
   );
 }
